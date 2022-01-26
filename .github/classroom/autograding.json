@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "mvn-clean-compile-test",
+      "setup": "",
+      "run": "mvn clean compile test",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": null
+    }
+  ]
+}
