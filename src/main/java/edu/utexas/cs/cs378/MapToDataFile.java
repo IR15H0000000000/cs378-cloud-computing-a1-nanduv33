@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -88,7 +89,7 @@ public class MapToDataFile {
 			// add the current text line to the data batch that we want to process.
 			batch.append(line);
 
-			if (lineCounter % batchSize == 0) {
+			if (lineCounter % 1 == 0) {
 				wordCountTmp = MapToDataFile.processLine(batch.toString());
 
 				System.out.println(lineCounter + "  Pages processed!");
@@ -113,18 +114,46 @@ public class MapToDataFile {
 	public static Map<String, Long> processLine(String input) {
 
 		String[] lines = input.split("\\R");
-		
-		Map<String, Long> wordCount = Arrays.stream(lines).flatMap(line -> Arrays.stream(line.trim().split(" "))) // split
+		//Map<Float, String> wordCount = Arrays.stream(lines).flatMap(line -> Arrays.stream(line.trim().split(","))); // split
 																													// by
 																													// space
-				.filter(word -> !pattern.matcher(word).find()) //
+				// Map<Float, String> wordCount = Arrays.stream(lines).flatMap(line -> Arrays.stream(line.trim().split(","))).collect(Collectors.toMap(
+                //       value
+                //       -> value, value -> value.length()));																											
+				/*.filter(word -> !pattern.matcher(word).find()) //
 				.map(word -> word.toLowerCase().trim()) // Drop all words with special chars
 														// and convert it to lower case.
 				.filter(word -> !word.isEmpty()) // Drop all empty words
 				.map(word -> new SimpleEntry<>(word, 1))
-				.collect(Collectors.groupingBy(SimpleEntry::getKey, Collectors.counting()));
+				.collect(Collectors.groupingBy(SimpleEntry::getKey, Collectors.counting()));*/
+				Map<String, Long> wordCount = Arrays.stream(lines).flatMap(line -> Arrays.stream(line.trim().split(" "))) // split
+				// by
+				// space
+.filter(word -> !pattern.matcher(word).find()) //
+.map(word -> word.toLowerCase().trim()) // Drop all words with special chars
+// and convert it to lower case.
+.filter(word -> !word.isEmpty()) // Drop all empty words
+.map(word -> new SimpleEntry<>(word, 1))
+.collect(Collectors.groupingBy(SimpleEntry::getKey, Collectors.counting()));
 
+		//Stream<String> arr_stream = Arrays.stream(lines).flatMap(line -> Arrays.stream(line.trim().split(",")));
+		String[] test = Arrays.stream(lines).flatMap(line -> Arrays.stream(line.trim().split(","))).toArray(String[]::new);
+		//arr_stream.forEach((ele) -> System.out.println(ele + " "));
+		System.out.println();
+		System.out.println(test.length);
+
+		//make sure array size-1 = 16
+		//loop through each element, make sure no type mismatch
+		//if mismatch return 
+
+
+
+		//System.out.println(Arrays.toString(test));
+		//System.out.println(input);
+		System.out.println();
+		System.exit(0);
 		return wordCount;
+		
 
 	}
 
