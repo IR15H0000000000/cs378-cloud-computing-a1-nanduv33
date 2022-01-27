@@ -18,11 +18,11 @@ public class Reducer {
 
 	private static BufferedReader br;
 
-	public static  Map<String, Long> reduceFromFile(String outputTempFile) {
+	public static  Map<String, Float> reduceFromFile(String outputTempFile) {
 		
 		
 		String line;
-		Map<String, Long> results = new HashMap<String, Long>(5500000);
+		Map<String, Float> results = new HashMap<String, Float>(5500000);
 //		TreeMap<String, Long> results = new TreeMap<String, Long>();
 		
 		FileInputStream fin;
@@ -39,7 +39,7 @@ public class Reducer {
 				
 				String[] data= line.split(",");
 				
-				long count = Long.parseLong(data[1]); 
+				float count = Float.parseFloat(data[1]); 
 				
 				if(results.containsKey(data[0])) {
 					results.put(data[0], count + results.get(data[0]));

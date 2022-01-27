@@ -21,7 +21,8 @@ public class Main {
 		if(args.length>0)
 			file=args[0];
 		
-		int batchSize = 4000;
+		//addd an arraylist
+		int batchSize = 10000;
 		
 		if(args.length>1)
 			batchSize = Integer.parseInt(args[1]);
@@ -33,7 +34,7 @@ public class Main {
 		
 		System.out.println("Now, we start reading the temp data and reducing it.");
 		
-		Map<String, Long> results = Reducer.reduceFromFile(outputTempFile);	
+		Map<String, Float> results = Reducer.reduceFromFile(outputTempFile);	
 		
 		MapToDataFile.appendToTempFile(results, "results.txt");
 		
