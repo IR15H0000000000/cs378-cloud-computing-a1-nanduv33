@@ -1,6 +1,8 @@
 package edu.utexas.cs.cs378;
 
 import java.util.Map;
+import java.io.File;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -16,13 +18,15 @@ public class Main {
 		
 		// This line is just for Kia :) 
 		// You should pass the file name and path as first argument of this main method. 
+		ArrayList<String> fileList = new ArrayList<String>();
 		String file = "./src/main/java/edu/utexas/cs/cs378/taxi-data-sorted-small.csv.bz2";
 		
+
 		if(args.length>0)
 			file=args[0];
 		
 		//addd an arraylist
-		int batchSize = 10000;
+		int batchSize = 1000000;
 		
 		if(args.length>1)
 			batchSize = Integer.parseInt(args[1]);
@@ -30,13 +34,13 @@ public class Main {
 		String outputTempFile  = "temp.txt";
 		
 		
-		MapToDataFile.mapIt(file, batchSize, outputTempFile);
+		MapToDataFile.mapIt(file, batchSize, outputTempFile, fileList);
 		
 		System.out.println("Now, we start reading the temp data and reducing it.");
 		
-		Map<String, Float> results = Reducer.reduceFromFile(outputTempFile);	
+		Reducer.reduceFromFile(fileList);	
 		
-		MapToDataFile.appendToTempFile(results, "results.txt");
+		//MapToDataFile.appendToTempFile(results, "results.txt");
 		
 
 	}

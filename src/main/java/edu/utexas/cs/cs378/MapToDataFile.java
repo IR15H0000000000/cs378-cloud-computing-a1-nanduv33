@@ -9,13 +9,17 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -27,9 +31,9 @@ public class MapToDataFile {
 
 	
 	
-	static private Pattern pattern = Pattern.compile("[^a-zA-Z]");
+	//static private Pattern pattern = Pattern.compile("[^a-zA-Z]");
 	static int errors = 0;
-	static int file_num = 1;
+	static int file_num = 0;
 
 	/**
 	 * 
@@ -37,7 +41,7 @@ public class MapToDataFile {
 	 * @param batchSize
 	 * @param outputTempFile
 	 */
-	static void mapIt(String file, int batchSize, String outputTempFile) {
+	static void mapIt(String file, int batchSize, String outputTempFile, ArrayList<String> fileList) {
 
 		try {
 			FileInputStream fin = new FileInputStream(file);
@@ -53,7 +57,7 @@ public class MapToDataFile {
 
 		
 
-			mapToFile(batchSize, outputTempFile, br, batch);
+			mapToFile(batchSize, outputTempFile, br, batch, fileList);
 
 
 
@@ -80,10 +84,10 @@ public class MapToDataFile {
 	 * @param lineCounter
 	 * @throws IOException
 	 */
-	static void mapToFile(int batchSize, String outputTempFile, BufferedReader br, StringBuilder batch)
+	static void mapToFile(int batchSize, String outputTempFile, BufferedReader br, StringBuilder batch, ArrayList<String> fileList) 
 			throws IOException {
 		String line;
-		Map<String, Float> wordCountTmp = new HashMap<String, Float>(batchSize);
+		Map<String, Float> tempData = new HashMap<String, Float>(batchSize);
 		
 		Long lineCounter = 0l;
 		// Start reading the file line by line.
@@ -96,19 +100,36 @@ public class MapToDataFile {
 			batch.append("\n");
 
 			if (lineCounter % batchSize == 0) {
-				wordCountTmp = MapToDataFile.processLine(batch.toString());
+				tempData = MapToDataFile.processLine(batch.toString());
 
 				System.out.println(lineCounter + "  Pages processed!");
 
 				// We can write the map into disk and read it back if it is too big.
 				// System.out.println(lineCounter + " Pages processed! ");
-				MapToDataFile.appendToTempFile(wordCountTmp, "temp" + lineCounter/batchSize + ".txt");
+				StringBuilder temp_name = new StringBuilder("temp");
+				temp_name.append(file_num++);
+				temp_name.append(".txt");
+				MapToDataFile.appendToTempFile(tempData, temp_name.toString());
+				fileList.add(temp_name.toString());
 
 				// reset the batch to empty string and restart.
 				batch = new StringBuilder("");
 
 			}
 		}
+
+			if (lineCounter % batchSize != 0) {
+				tempData = MapToDataFile.processLine(batch.toString());
+
+				System.out.println(lineCounter + "  Pages processed!");
+				StringBuilder temp_name = new StringBuilder("temp");
+				temp_name.append(file_num++);
+				temp_name.append(".txt");
+				MapToDataFile.appendToTempFile(tempData, temp_name.toString());
+				fileList.add(temp_name.toString());
+				// reset the batch to empty string and restart.
+				batch = new StringBuilder("");
+			}
 	}
 
 	/**
@@ -156,7 +177,6 @@ public class MapToDataFile {
 		}	
 
 		return processed;
-		//4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15
 
 	}
 
@@ -173,8 +193,14 @@ public class MapToDataFile {
 			bf = new BufferedWriter(new FileWriter(file, true));
 
 			// iterate map entries
+			LinkedHashMap<String, Float> tempSorted = new LinkedHashMap<>();
+		
+			data.entrySet()
+				.stream()
+				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())) 
+				.forEachOrdered(x -> tempSorted.put(x.getKey(), x.getValue()));
 
-			for (Map.Entry<String, Float> entry : data.entrySet()) {
+			for (Map.Entry<String, Float> entry : tempSorted.entrySet()) {
 				
 				// put key and value separated by a comma
 				// better use a string builder.
@@ -183,7 +209,7 @@ public class MapToDataFile {
 					bf.write(entry.getKey() + "\n");
 					return;
 				}
-
+				
 				bf.write(entry.getKey() + "  /" + entry.getValue());
 
 				// new line
