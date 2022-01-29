@@ -79,7 +79,7 @@ public class MapToDataFile {
 	static void mapToFile(int batchSize, BufferedReader br, StringBuilder batch, ArrayList<String> fileList) 
 			throws IOException {
 		String line;
-		Map<String, Float> tempData = new HashMap<String, Float>(batchSize);
+		Map<String, String> tempData = new HashMap<String, String>(batchSize);
 		
 		Long lineCounter = 0l;
 		// Start reading the file line by line.
@@ -120,6 +120,7 @@ public class MapToDataFile {
 			temp_name.append(".txt");
 			MapToDataFile.appendToTempFile(tempData, temp_name.toString());
 			fileList.add(temp_name.toString());
+			batch = new StringBuilder("");
 		}
 	}
 
@@ -129,11 +130,11 @@ public class MapToDataFile {
 	 * @return
 	 */
 
-	public static Map<String, Float> processLine(String input) {
+	public static Map<String, String> processLine(String input) {
 
 		String[] lines = input.split("\\R|\\n");
 				
-		Map<String, Float> processed = new HashMap<String, Float>();
+		Map<String, String> processed = new HashMap<String, String>();
 
 		for(String line : lines) {
 			int valid = 0;
@@ -153,14 +154,14 @@ public class MapToDataFile {
 				}
 
 			if(errors != 5 && valid == -1) {
-				Map<String, Float> errMap = new HashMap<String, Float>(){{
-					this.put(String.join(",", tokens), -1.0f);
+				Map<String, String> errMap = new HashMap<String, String>(){{
+					this.put(line, "-1.0");
 				}};
 				MapToDataFile.appendToTempFile(errMap , "errors.txt");
 				errors++;
 			} 
 			if(valid == 0) {
-				processed.put(line, Float.parseFloat(tokens[16]));
+				processed.put(line, tokens[16]);
 			}
 		}	
 
@@ -168,7 +169,7 @@ public class MapToDataFile {
 
 	}
 
-	public static void appendToTempFile(Map<String, Float> data, String outputFile) {
+	public static void appendToTempFile(Map<String, String> data, String outputFile) {
 
 		// new file object
 		File file = new File(outputFile);
@@ -186,18 +187,21 @@ public class MapToDataFile {
 			data.entrySet()
 				.stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())) 
-				.forEachOrdered(x -> tempSorted.put(x.getKey(), x.getValue()));
+				.forEachOrdered(x -> tempSorted.put(x.getKey(), Float.parseFloat(x.getValue())));
 
 			for (Map.Entry<String, Float> entry : tempSorted.entrySet()) {
 				
 				//Special case for error lines, don't need to append values, just write the line
-				if(entry.getValue() == -1) {
-					bf.write(entry.getKey() + "\n");
-					return;
+				if(entry.getValue() == -1.0) {
+					bf.write(entry.getKey());
+					bf.newLine();
+					bf.close();
 				}
 				//For proper lines, append the value for easier sorting later.
-				bf.write(entry.getKey() + "  /" + entry.getValue());
-
+				StringBuilder line = new StringBuilder(entry.getKey());
+				line.append("  /");
+				line.append(entry.getValue());
+				bf.write(line.toString());
 				// new line
 				bf.newLine();
 			}

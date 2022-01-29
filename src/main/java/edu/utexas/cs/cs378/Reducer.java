@@ -71,13 +71,11 @@ public class Reducer {
 				}
 
 				while (line != null) {
-					//String[] data = line.split("  /");
 					bf.write(line);
 					line = br.readLine();
 					bf.newLine();
 				}
 				while (line1 != null) {
-					//String[] data1 = line1.split("  /");
 					bf.write(line1);
 					line1 = br1.readLine();
 					bf.newLine();
