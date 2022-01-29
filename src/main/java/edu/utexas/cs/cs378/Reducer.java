@@ -9,30 +9,23 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.ArrayList;
-//import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
-// Useful article about getting 3 billion items in Java Map with 16 GB RAM
-// http://kotek.net/blog/3G_map
 
 public class Reducer {
 
 	private static BufferedReader br;
 	private static BufferedReader br1;
+	private static final String FINAL_OUTPUT = "SORTED-FILE-RESULT.txt";
 
 	public static void reduceFromFile(ArrayList<String> fileList) {
 		int num_files = fileList.size();
 		
 		String line;
 		String line1;
-		Map<String, Float> results = new HashMap<String, Float>(5500000);
 		while (fileList.size() >= 2) {
 			StringBuilder temp_name = new StringBuilder();
 			if(fileList.size() == 2) {
-				temp_name.append("result.txt");
+				temp_name.append(FINAL_OUTPUT);
 			}
 			else {
 				temp_name.append("temp");
@@ -65,13 +58,12 @@ public class Reducer {
 					float count = Float.parseFloat(data[1]); 
 					float count1 = Float.parseFloat(data1[1]);
 					if (count > count1) {
-						results.put(data[0], count);
-						bf.write(data[0] + "  /" + data[1]);
+						bf.write(line);
 						bf.newLine();
 						line = br.readLine();
 					}
 					else {
-						bf.write(data1[0] + "  /" + data1[1]);
+						bf.write(line1);
 						bf.newLine();
 						line1 = br1.readLine();
 					}
@@ -79,25 +71,22 @@ public class Reducer {
 				}
 
 				while (line != null) {
-					String[] data = line.split("  /");
-					bf.write(data[0] + "  /" + data[1]);
+					//String[] data = line.split("  /");
+					bf.write(line);
 					line = br.readLine();
 					bf.newLine();
 				}
 				while (line1 != null) {
-					String[] data1 = line1.split("  /");
-					bf.write(data1[0] + "  /" + data1[1]);
+					//String[] data1 = line1.split("  /");
+					bf.write(line1);
 					line1 = br1.readLine();
 					bf.newLine();
-					line1 = br1.readLine();
 				}
 				bf.flush();
 				fileList.add(file.toString());		
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				try {

@@ -10,15 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Comparator;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 import org.apache.commons.compress.compressors.CompressorException;
@@ -31,7 +26,6 @@ public class MapToDataFile {
 
 	
 	
-	//static private Pattern pattern = Pattern.compile("[^a-zA-Z]");
 	static int errors = 0;
 	static int file_num = 0;
 
@@ -39,9 +33,9 @@ public class MapToDataFile {
 	 * 
 	 * @param file
 	 * @param batchSize
-	 * @param outputTempFile
+	 * @param fileList
 	 */
-	static void mapIt(String file, int batchSize, String outputTempFile, ArrayList<String> fileList) {
+	static void mapIt(String file, int batchSize, ArrayList<String> fileList) {
 
 		try {
 			FileInputStream fin = new FileInputStream(file);
@@ -51,13 +45,12 @@ public class MapToDataFile {
 			CompressorInputStream input = new CompressorStreamFactory().createCompressorInputStream(bis);
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 
-			// Initialize a bunch of variables
-
+			// Initialize a natch
 			StringBuilder batch = new StringBuilder("");
 
 		
 
-			mapToFile(batchSize, outputTempFile, br, batch, fileList);
+			mapToFile(batchSize, br, batch, fileList);
 
 
 
@@ -78,13 +71,12 @@ public class MapToDataFile {
 	/**
 	 * 
 	 * @param batchSize
-	 * @param outputTempFile
 	 * @param br
 	 * @param batch
 	 * @param lineCounter
 	 * @throws IOException
 	 */
-	static void mapToFile(int batchSize, String outputTempFile, BufferedReader br, StringBuilder batch, ArrayList<String> fileList) 
+	static void mapToFile(int batchSize, BufferedReader br, StringBuilder batch, ArrayList<String> fileList) 
 			throws IOException {
 		String line;
 		Map<String, Float> tempData = new HashMap<String, Float>(batchSize);
@@ -102,10 +94,9 @@ public class MapToDataFile {
 			if (lineCounter % batchSize == 0) {
 				tempData = MapToDataFile.processLine(batch.toString());
 
-				System.out.println(lineCounter + "  Pages processed!");
+				System.out.println(lineCounter + "  Lines processed!");
 
 				// We can write the map into disk and read it back if it is too big.
-				// System.out.println(lineCounter + " Pages processed! ");
 				StringBuilder temp_name = new StringBuilder("temp");
 				temp_name.append(file_num++);
 				temp_name.append(".txt");
@@ -114,22 +105,22 @@ public class MapToDataFile {
 
 				// reset the batch to empty string and restart.
 				batch = new StringBuilder("");
-
 			}
 		}
 
-			if (lineCounter % batchSize != 0) {
-				tempData = MapToDataFile.processLine(batch.toString());
+		//If num lines not perfectly divisible by the batch size, handle rest. 
+		if (lineCounter % batchSize != 0) {
+			tempData = MapToDataFile.processLine(batch.toString());
 
-				System.out.println(lineCounter + "  Pages processed!");
-				StringBuilder temp_name = new StringBuilder("temp");
-				temp_name.append(file_num++);
-				temp_name.append(".txt");
-				MapToDataFile.appendToTempFile(tempData, temp_name.toString());
-				fileList.add(temp_name.toString());
-				// reset the batch to empty string and restart.
-				batch = new StringBuilder("");
-			}
+			System.out.println(lineCounter + "  Lines processed!");
+
+			// Writing out remaining lines left in the batch. 
+			StringBuilder temp_name = new StringBuilder("temp");
+			temp_name.append(file_num++);
+			temp_name.append(".txt");
+			MapToDataFile.appendToTempFile(tempData, temp_name.toString());
+			fileList.add(temp_name.toString());
+		}
 	}
 
 	/**
@@ -149,18 +140,15 @@ public class MapToDataFile {
 			String tokens[] = line.trim().split(",");
 			if (tokens.length != 17) {
 				valid = -1;
-				System.out.println("length invalid");
 			}
 				for (int j = 4; j < 16 && valid == 0; j++) {
 					if(j == 10) {
 						continue;
 					}
 					try {
-						float value = Float.parseFloat(tokens[j]);
 					}
 					catch (NumberFormatException e) {
 						valid = -1;
-						System.out.println("type invalid    " + j);
 					} 
 				}
 
@@ -202,14 +190,12 @@ public class MapToDataFile {
 
 			for (Map.Entry<String, Float> entry : tempSorted.entrySet()) {
 				
-				// put key and value separated by a comma
-				// better use a string builder.
-				// better use a data serializiation library
+				//Special case for error lines, don't need to append values, just write the line
 				if(entry.getValue() == -1) {
 					bf.write(entry.getKey() + "\n");
 					return;
 				}
-				
+				//For proper lines, append the value for easier sorting later.
 				bf.write(entry.getKey() + "  /" + entry.getValue());
 
 				// new line
