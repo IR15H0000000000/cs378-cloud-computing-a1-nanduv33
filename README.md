@@ -3,13 +3,13 @@
 
 ## Team members' names 
 
-1. Student Name:
+1. Student Name: Nandu Vudumula
 
-   Student UT EID:
+   Student UT EID: nrv379
 
-2. Student Name:
+2. Student Name: Jay Park
 
-   Student UT EID:
+   Student UT EID: jhp2556
 
  ...
 
@@ -50,21 +50,21 @@ mvn clean compile assembly:single
 # How to run
 
 ```bash
-mvn clean compile  exec:java -Dexec.args="WikipediaPagesOneDocPerLine.txt.bz2 300"
+mvn clean compile  exec:java -Dexec.args="taxi-data-sorted-large.csv.bz2 1000000"
 ```
 
 
 
 ```bash
-mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main"  -Dexec.args="WikipediaPagesOneDocPerLine.txt.bz2 500"
+mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main"  -Dexec.args="taxi-data-sorted-large.csv.bz2 1000000"
 ```
 
 
 Input file is: 
 
-WikipediaPagesOneDocPerLine.txt.bz2 
+taxi-data-sorted-large.csv.bz2 
 
-Data line batch size is: 500
+Data line batch size is: 500000
 
 You can modify the batch size based on available memory.
 
@@ -72,10 +72,27 @@ You can modify the batch size based on available memory.
 If you run this over SSH and it takes a lots of time you can run it in background using the following command
 
 ```bash
-nohub mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main"  -Dexec.args="WikipediaPagesOneDocPerLine.txt.bz2 500"  & 
+nohub mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main"  -Dexec.args="taxi-data-sorted-large.csv.bz2  1000000"  & 
 ```
 
 We recommend the above command for running the Main Java executable. 
+
+
+# Running with bash script (clean up leftover files before ran including previous result)
+
+Give permissions to shell script if not already assigned
+
+```bash
+chmod u+x run.sh
+```
+
+# Run the script
+
+```bash
+./run.sh
+```
+
+
 
 
 
