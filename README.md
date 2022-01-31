@@ -92,6 +92,13 @@ chmod u+x run.sh
 ./run.sh
 ```
 
+# Screenshots
+
+![error-lines.jpeg](https://github.com/utacs/cs378-cloud-computing-a1-nanduv33/blob/main/error-lines.jpeg)
+![instance-ip.png](https://github.com/utacs/cs378-cloud-computing-a1-nanduv33/blob/main/instance-ip.png)
+![instance-terminal-ls-output.png](https://github.com/utacs/cs378-cloud-computing-a1-nanduv33/blob/main/instance-terminal-ls-output.png)
+![sorted-output.png](https://github.com/utacs/cs378-cloud-computing-a1-nanduv33/blob/main/sorted-output.png)
+
 
 
 
