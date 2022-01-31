@@ -50,13 +50,13 @@ mvn clean compile assembly:single
 # How to run
 
 ```bash
-mvn clean compile  exec:java -Dexec.args="taxi-data-sorted-large.csv.bz2 1000000"
+mvn clean compile  exec:java -Dexec.args="taxi-data-sorted-large.csv.bz2 500000"
 ```
 
 
 
 ```bash
-mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main"  -Dexec.args="taxi-data-sorted-large.csv.bz2 1000000"
+mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main" -DargLine="-Xmx2g" -Dexec.args="taxi-data-sorted-large.csv.bz2 1000000"
 ```
 
 
@@ -72,7 +72,7 @@ You can modify the batch size based on available memory.
 If you run this over SSH and it takes a lots of time you can run it in background using the following command
 
 ```bash
-nohub mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main"  -Dexec.args="taxi-data-sorted-large.csv.bz2  1000000"  & 
+nohub mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main" -DargLine="-Xmx2g" -Dexec.args="taxi-data-sorted-large.csv.bz2  500000" 
 ```
 
 We recommend the above command for running the Main Java executable. 

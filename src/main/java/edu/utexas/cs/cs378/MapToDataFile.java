@@ -131,9 +131,8 @@ public class MapToDataFile {
 	 */
 
 	public static Map<String, String> processLine(String input) {
-
+		
 		String[] lines = input.split("\\R|\\n");
-				
 		Map<String, String> processed = new HashMap<String, String>();
 
 		for(String line : lines) {
@@ -195,15 +194,16 @@ public class MapToDataFile {
 				if(entry.getValue() == -1.0) {
 					bf.write(entry.getKey());
 					bf.newLine();
-					bf.close();
 				}
 				//For proper lines, append the value for easier sorting later.
-				StringBuilder line = new StringBuilder(entry.getKey());
-				line.append("  /");
-				line.append(entry.getValue());
-				bf.write(line.toString());
-				// new line
-				bf.newLine();
+				else {
+					StringBuilder line = new StringBuilder(entry.getKey());
+					line.append("  /");
+					line.append(entry.getValue());
+					bf.write(line.toString());
+					// new line
+					bf.newLine();
+				}
 			}
 
 			bf.flush();

@@ -15,6 +15,8 @@ public class Reducer {
 
 	private static BufferedReader br;
 	private static BufferedReader br1;
+	private static File f;
+	private static File f1;
 	private static final String FINAL_OUTPUT = "SORTED-FILE-RESULT.txt";
 
 	public static void reduceFromFile(ArrayList<String> fileList) {
@@ -37,9 +39,11 @@ public class Reducer {
 			FileInputStream fin;
 			FileInputStream fin1;
 			try {
+				f = new File(fileList.get(0));
 				fin = new FileInputStream(fileList.get(0));
 				fileList.remove(0);
 				fin1 = new FileInputStream(fileList.get(0));
+				f1 = new File(fileList.get(0));
 				fileList.remove(0);
 				BufferedInputStream bis = new BufferedInputStream(fin);
 				br = new BufferedReader(new InputStreamReader(bis));
@@ -67,7 +71,6 @@ public class Reducer {
 						bf.newLine();
 						line1 = br1.readLine();
 					}
-			
 				}
 
 				while (line != null) {
@@ -81,6 +84,7 @@ public class Reducer {
 					bf.newLine();
 				}
 				bf.flush();
+
 				fileList.add(file.toString());		
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -89,6 +93,10 @@ public class Reducer {
 			} finally {
 				try {
 					// always close the writer
+					br.close();
+					br1.close();
+					f.delete();
+					f1.delete();
 					bf.close();
 				} catch (Exception e) {
 			}
